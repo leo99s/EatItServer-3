@@ -1,8 +1,17 @@
 package pht.eatitserver;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,13 +22,47 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-
+import android.widget.Toast;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.rengwuxian.materialedittext.MaterialEditText;
+import com.squareup.picasso.Picasso;
+import java.util.UUID;
+import info.hoang8f.widget.FButton;
 import pht.eatitserver.global.Global;
+import pht.eatitserver.model.Category;
+import pht.eatitserver.viewholder.CategoryViewHolder;
 
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    TextView txtName;
+    DrawerLayout drawer;
+
+    TextView txtUserName;
+    RecyclerView rcvCategory;
+    RecyclerView.LayoutManager layoutManager;
+
+    MaterialEditText edtCategoryName;
+    FButton btnBrowse, btnUpload;
+
+    FirebaseDatabase database;
+    DatabaseReference category;
+    FirebaseRecyclerAdapter<Category, CategoryViewHolder> adapter;
+
+    FirebaseStorage storage;
+    StorageReference reference;
+
+    Category newCategory;
+    Uri uri;
+
+    private final int PICK_IMAGE_REQUEST = 71;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,12 +76,11 @@ public class Home extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                showDialog();
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -48,8 +90,143 @@ public class Home extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         View header = navigationView.getHeaderView(0);
-        txtName = header.findViewById(R.id.txtName);
-        txtName.setText(Global.activeUser.getName());
+        txtUserName = header.findViewById(R.id.txtUserName);
+        txtUserName.setText(Global.activeUser.getName());
+
+        database = FirebaseDatabase.getInstance();
+        category = database.getReference("Category");
+
+        storage = FirebaseStorage.getInstance();
+        reference = storage.getReference();
+
+        rcvCategory = findViewById(R.id.rcvCategory);
+        rcvCategory.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        rcvCategory.setLayoutManager(layoutManager);
+
+        loadCategory();
+    }
+
+    private void showDialog() {
+        final AlertDialog.Builder alert = new AlertDialog.Builder(Home.this);
+        alert.setIcon(R.drawable.ic_shopping_cart);
+        alert.setTitle("Add new category");
+        alert.setMessage("Please fill in all fields :");
+        LayoutInflater inflater = this.getLayoutInflater();
+        View add_category = inflater.inflate(R.layout.add_category, null);
+
+        edtCategoryName = add_category.findViewById(R.id.edtCategoryName);
+        btnBrowse = add_category.findViewById(R.id.btnBrowse);
+        btnUpload = add_category.findViewById(R.id.btnUpload);
+
+        btnBrowse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickImage();
+            }
+        });
+
+        btnUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadImage();
+            }
+        });
+
+        alert.setView(add_category);
+
+        alert.setPositiveButton("ADD", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                dialog.dismiss();
+                if(newCategory != null){
+                    category.push().setValue(newCategory);
+                    Snackbar.make(drawer, "New category " + newCategory.getName() + " was added !", Snackbar.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        alert.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                dialog.dismiss();
+            }
+        });
+
+        alert.show();
+    }
+
+    private void uploadImage() {
+        if(uri != null){
+            final ProgressDialog dialog = new ProgressDialog(this);
+            dialog.setMessage("Uploading...");
+            dialog.show();
+
+            String imageName = UUID.randomUUID().toString();
+            final StorageReference imageFolder = reference.child("images/" + imageName);
+
+            imageFolder.putFile(uri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            dialog.dismiss();
+                            Toast.makeText(Home.this, "Uploaded successfully !", Toast.LENGTH_SHORT).show();
+                            imageFolder.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    newCategory = new Category(
+                                            edtCategoryName.getText().toString(),
+                                            uri.toString());
+                                }
+                            });
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            dialog.dismiss();
+                            Toast.makeText(Home.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = 100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount();
+                            dialog.setMessage(progress + "% uploaded");
+                        }
+                    });
+        }
+    }
+
+    private void pickImage() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Pick an image"), PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == PICK_IMAGE_REQUEST
+                && resultCode == RESULT_OK
+                && data != null
+                && data.getData() != null){
+            uri = data.getData();
+            btnBrowse.setText("Picked");
+        }
+    }
+
+    private void loadCategory() {
+        adapter = new FirebaseRecyclerAdapter<Category, CategoryViewHolder>(Category.class, R.layout.item_category, CategoryViewHolder.class, category) {
+            @Override
+            protected void populateViewHolder(CategoryViewHolder viewHolder, Category model, int position) {
+                viewHolder.name_category.setText(model.getName());
+                Picasso.with(Home.this).load(model.getImage()).into(viewHolder.image_category);
+            }
+        };
+
+        adapter.notifyDataSetChanged(); // Refresh data if changed
+        rcvCategory.setAdapter(adapter);
     }
 
     @Override
