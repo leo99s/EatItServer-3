@@ -141,7 +141,7 @@ public class Home extends AppCompatActivity
                 dialog.dismiss();
                 if(newCategory != null){
                     category.push().setValue(newCategory);
-                    Snackbar.make(drawer, "New category " + newCategory.getName() + " was added !", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(drawer, newCategory.getName() + " was added !", Snackbar.LENGTH_LONG).show();
                 }
             }
         });
