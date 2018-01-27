@@ -63,8 +63,6 @@ public class Home extends AppCompatActivity
     Category newCategory;
     Uri uri;
 
-    private final int PICK_IMAGE_REQUEST = 71;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +75,7 @@ public class Home extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDialog();
+                showAddDialog();
             }
         });
 
@@ -108,7 +106,7 @@ public class Home extends AppCompatActivity
         loadCategory();
     }
 
-    private void showDialog() {
+    private void showAddDialog() {
         final AlertDialog.Builder alert = new AlertDialog.Builder(Home.this);
         alert.setIcon(R.drawable.ic_shopping_cart);
         alert.setTitle("Add new category");
@@ -203,12 +201,12 @@ public class Home extends AppCompatActivity
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Pick an image"), PICK_IMAGE_REQUEST);
+        startActivityForResult(Intent.createChooser(intent, "Pick an image"), Global.PICK_IMAGE_REQUEST);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == PICK_IMAGE_REQUEST
+        if(requestCode == Global.PICK_IMAGE_REQUEST
                 && resultCode == RESULT_OK
                 && data != null
                 && data.getData() != null){
@@ -226,7 +224,11 @@ public class Home extends AppCompatActivity
                 viewHolder.setItemClickListener(new ItemClickListener() {
                     @Override
                     public void onClick(View view, int position, boolean isLongClick) {
-
+                        // Send category_id to new activity
+                        Intent foodList = new Intent(Home.this, FoodList.class);
+                        foodList.putExtra("category_id", adapter.getRef(position).getKey());
+                        startActivity(foodList);
+                        finish();
                     }
                 });
             }
