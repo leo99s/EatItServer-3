@@ -13,8 +13,10 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Toast;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -165,13 +167,14 @@ public class FoodList extends AppCompatActivity {
                             imageFolder.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
-                                    newFood = new Food();
-                                    newFood.setCategory_ID(category_id);
-                                    newFood.setName(edtFoodName.getText().toString());
-                                    newFood.setImage(uri.toString());
-                                    newFood.setDescription(edtFoodDescription.getText().toString());
-                                    newFood.setPrice(edtFoodPrice.getText().toString());
-                                    newFood.setDiscount(edtFoodDiscount.getText().toString());
+                                    newFood = new Food(
+                                            category_id,
+                                            edtFoodName.getText().toString(),
+                                            uri.toString(),
+                                            edtFoodDescription.getText().toString(),
+                                            edtFoodPrice.getText().toString(),
+                                            edtFoodDiscount.getText().toString()
+                                    );
                                 }
                             });
                         }
@@ -234,5 +237,121 @@ public class FoodList extends AppCompatActivity {
 
         adapter.notifyDataSetChanged();
         rcvFood.setAdapter(adapter);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if(item.getTitle().equals(Global.UPDATE)){
+            showUpdateDialog(adapter.getRef(item.getOrder()).getKey(), adapter.getItem(item.getOrder()));
+        }
+        else if(item.getTitle().equals(Global.DELETE)){
+            deleteFood(adapter.getRef(item.getOrder()).getKey(), adapter.getItem(item.getOrder()));
+        }
+
+        return super.onContextItemSelected(item);
+    }
+
+    private void deleteFood(String key, Food item) {
+        food.child(key).removeValue();
+        Snackbar.make(root_layout, item.getName() + " was deleted !", Snackbar.LENGTH_LONG).show();
+    }
+
+    private void showUpdateDialog(final String key, final Food item) {
+        final AlertDialog.Builder alert = new AlertDialog.Builder(FoodList.this);
+        alert.setIcon(R.drawable.ic_shopping_cart);
+        alert.setTitle("Update the food");
+        alert.setMessage("Please fill in all fields :");
+        LayoutInflater inflater = this.getLayoutInflater();
+        View add_food = inflater.inflate(R.layout.add_food, null);
+
+        edtFoodName = add_food.findViewById(R.id.edtFoodName);
+        edtFoodDescription = add_food.findViewById(R.id.edtFoodDescription);
+        edtFoodPrice = add_food.findViewById(R.id.edtFoodPrice);
+        edtFoodDiscount = add_food.findViewById(R.id.edtFoodDiscount);
+        btnBrowse = add_food.findViewById(R.id.btnBrowse);
+        btnUpload = add_food.findViewById(R.id.btnUpload);
+
+        edtFoodName.setText(item.getName());
+        edtFoodDescription.setText(item.getDescription());
+        edtFoodPrice.setText(item.getPrice());
+        edtFoodDiscount.setText(item.getDiscount());
+
+        btnBrowse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickImage();
+            }
+        });
+
+        btnUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeImage(item);
+            }
+        });
+
+        alert.setView(add_food);
+
+        alert.setPositiveButton("UPDATE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                dialog.dismiss();
+                item.setName(edtFoodName.getText().toString());
+                item.setDescription(edtFoodDescription.getText().toString());
+                item.setPrice(edtFoodPrice.getText().toString());
+                item.setDiscount(edtFoodDiscount.getText().toString());
+                food.child(key).setValue(item);
+                Snackbar.make(root_layout, item.getName() + " was updated !", Snackbar.LENGTH_LONG).show();
+            }
+        });
+
+        alert.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                dialog.dismiss();
+            }
+        });
+
+        alert.show();
+    }
+
+    private void changeImage(final Food item) {
+        if(uri != null){
+            final ProgressDialog dialog = new ProgressDialog(this);
+            dialog.setMessage("Uploading...");
+            dialog.show();
+
+            String imageName = UUID.randomUUID().toString();
+            final StorageReference imageFolder = reference.child("images/" + imageName);
+
+            imageFolder.putFile(uri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            dialog.dismiss();
+                            Toast.makeText(FoodList.this, "Uploaded successfully !", Toast.LENGTH_SHORT).show();
+                            imageFolder.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    item.setImage(uri.toString());
+                                }
+                            });
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            dialog.dismiss();
+                            Toast.makeText(FoodList.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = 100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount();
+                            dialog.setMessage(progress + "% uploaded");
+                        }
+                    });
+        }
     }
 }
