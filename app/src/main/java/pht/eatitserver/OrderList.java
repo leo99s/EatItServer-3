@@ -1,6 +1,7 @@
 package pht.eatitserver;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -57,7 +58,7 @@ public class OrderList extends AppCompatActivity {
                 request
         ) {
             @Override
-            protected void populateViewHolder(OrderViewHolder viewHolder, Request model, int position) {
+            protected void populateViewHolder(OrderViewHolder viewHolder, final Request model, int position) {
                 viewHolder.id_order.setText(adapter.getRef(position).getKey());
                 viewHolder.phone_order.setText(model.getPhone());
                 viewHolder.address_order.setText(model.getAddress());
@@ -66,7 +67,9 @@ public class OrderList extends AppCompatActivity {
                 viewHolder.setItemClickListener(new ItemClickListener() {
                     @Override
                     public void onClick(View view, int position, boolean isLongClick) {
-
+                        Intent trackOrder = new Intent(OrderList.this, TrackOrder.class);
+                        Global.currentRequest = model;
+                        startActivity(trackOrder);
                     }
                 });
             }
