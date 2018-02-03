@@ -250,7 +250,7 @@ public class TrackOrder extends FragmentActivity implements
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         displayLocation();
-        updateLocation();
+        //updateLocation();
     }
 
     private void updateLocation() {
