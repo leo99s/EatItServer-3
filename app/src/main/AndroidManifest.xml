@@ -44,7 +44,12 @@
 
         <activity
             android:name=".TrackOrder"
-            android:label="@string/title_activity_track_order"></activity>
+            android:label="@string/title_activity_track_order" />
+
+        <service
+            android:name=".service.OrderListener"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
