@@ -49,7 +49,9 @@
         <service
             android:name=".service.OrderListener"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".OrderDetail"></activity>
     </application>
 
 </manifest>

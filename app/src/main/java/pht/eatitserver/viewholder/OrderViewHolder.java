@@ -8,7 +8,10 @@ import pht.eatitserver.R;
 import pht.eatitserver.global.Global;
 import pht.eatitserver.onclick.ItemClickListener;
 
-public class OrderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
+public class OrderViewHolder extends RecyclerView.ViewHolder implements
+        View.OnClickListener,
+        View.OnCreateContextMenuListener,
+        View.OnLongClickListener {
 
     public TextView id_order, phone_order, address_order, status_order;
 
@@ -22,6 +25,7 @@ public class OrderViewHolder extends RecyclerView.ViewHolder implements View.OnC
         status_order = view.findViewById(R.id.status_order);
 
         view.setOnClickListener(this);
+        view.setOnLongClickListener(this);
         view.setOnCreateContextMenuListener(this);
     }
 
@@ -39,5 +43,11 @@ public class OrderViewHolder extends RecyclerView.ViewHolder implements View.OnC
         menu.setHeaderTitle("Select an action");
         menu.add(0, 0, getAdapterPosition(), Global.UPDATE);
         menu.add(0, 1, getAdapterPosition(), Global.DELETE);
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        itemClickListener.onClick(view, getAdapterPosition(), true);
+        return true;
     }
 }

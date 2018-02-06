@@ -28,22 +28,18 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import pht.eatitserver.global.DirectionsJSONParser;
 import pht.eatitserver.global.Global;
 import pht.eatitserver.remote.IGeoCoordinate;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 

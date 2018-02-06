@@ -263,7 +263,7 @@ public class Home extends AppCompatActivity
     private void deleteCategory(String key, Category item) {
         DatabaseReference food = database.getReference("Food");
         Query foodByCategory = food.orderByChild("category_id").equalTo(key);
-        
+
         foodByCategory.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
