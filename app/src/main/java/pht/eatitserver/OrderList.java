@@ -2,7 +2,6 @@ package pht.eatitserver;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,16 +10,25 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-
+import android.widget.Toast;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.jaredrummler.materialspinner.MaterialSpinner;
-
 import pht.eatitserver.global.Global;
+import pht.eatitserver.model.Notification;
 import pht.eatitserver.model.Request;
+import pht.eatitserver.model.Response;
+import pht.eatitserver.model.Sender;
+import pht.eatitserver.model.Token;
 import pht.eatitserver.onclick.ItemClickListener;
+import pht.eatitserver.remote.APIService;
 import pht.eatitserver.viewholder.OrderViewHolder;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class OrderList extends AppCompatActivity {
 
@@ -33,10 +41,14 @@ public class OrderList extends AppCompatActivity {
     DatabaseReference request;
     FirebaseRecyclerAdapter<Request, OrderViewHolder> adapter;
 
+    APIService mService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_list);
+
+        mService = Global.getFCMService();
 
         database = FirebaseDatabase.getInstance();
         request = database.getReference("Request");
@@ -72,12 +84,12 @@ public class OrderList extends AppCompatActivity {
                             Global.currentRequest = model;
                             startActivity(trackOrder);
                         }
-                        else {
+                        /*else {
                             Intent orderDetail = new Intent(OrderList.this, OrderDetail.class);
                             Global.currentRequest = model;
                             orderDetail.putExtra("orderID", adapter.getRef(position).getKey());
                             startActivity(orderDetail);
-                        }
+                        }*/
                     }
                 });
             }
@@ -122,6 +134,7 @@ public class OrderList extends AppCompatActivity {
                 dialog.dismiss();
                 item.setStatus(String.valueOf(spinnerStatus.getSelectedIndex()));
                 request.child(key).setValue(item);
+                sendNotification(key, item);
             }
         });
 
@@ -133,5 +146,48 @@ public class OrderList extends AppCompatActivity {
         });
 
         alert.show();
+    }
+
+    private void sendNotification(final String key, Request item) {
+        DatabaseReference reference = database.getReference("Token");
+
+        reference.orderByKey().equalTo(item.getPhone()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot childDataSnapshot : dataSnapshot.getChildren()){
+                    Token clientToken = childDataSnapshot.getValue(Token.class);
+
+                    // Create raw payload to send
+                    Notification notification = new Notification("Hoàng Tâm", "Your order " + key + " was updated !");
+                    Sender content = new Sender(clientToken.getToken(), notification);
+                    mService.sendNotification(content)
+                            .enqueue(new Callback<Response>() {
+                                @Override
+                                public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                                    if(response.code() == 200){
+                                        if(response.body().success == 1){
+                                            Toast.makeText(OrderList.this, "Your order was update !", Toast.LENGTH_SHORT).show();
+                                            finish();
+                                        }
+                                        else {
+                                            Toast.makeText(OrderList.this, "Your order was update but we can't send notification !", Toast.LENGTH_SHORT).show();
+                                            finish();
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Response> call, Throwable t) {
+
+                                }
+                            });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

@@ -3,7 +3,7 @@ package pht.eatitserver.remote;
 import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
-public class RetrofitClient {
+public class MapRetrofitClient {
 
     private static Retrofit retrofit = null;
 

@@ -7,8 +7,10 @@ import android.graphics.Paint;
 
 import pht.eatitserver.model.Request;
 import pht.eatitserver.model.User;
+import pht.eatitserver.remote.APIService;
+import pht.eatitserver.remote.FCMRetrofitClient;
 import pht.eatitserver.remote.IGeoCoordinate;
-import pht.eatitserver.remote.RetrofitClient;
+import pht.eatitserver.remote.MapRetrofitClient;
 import retrofit2.Retrofit;
 
 public class Global {
@@ -18,7 +20,8 @@ public class Global {
     public static final int PICK_IMAGE_REQUEST = 71;
     public static final String UPDATE = "Update";
     public static final String DELETE = "Delete";
-    public static final String baseUrl = "https://maps.googleapis.com";
+    public static final String BASE_MAP_URL = "https://maps.googleapis.com";
+    public static final String BASE_FCM_URL = "https://fcm.googleapis.com";
 
     public static String convertCodeToStatus(String code){
         if(code.equals("0")){
@@ -33,7 +36,7 @@ public class Global {
     }
 
     public static IGeoCoordinate getGeoCodeService(){
-        return RetrofitClient.getClient(baseUrl).create(IGeoCoordinate.class);
+        return MapRetrofitClient.getClient(BASE_MAP_URL).create(IGeoCoordinate.class);
     }
 
     public static Bitmap scaleBitmap(Bitmap bitmap, int newWidth, int newHeight){
@@ -50,5 +53,9 @@ public class Global {
         canvas.drawBitmap(bitmap, 0, 0, new Paint(Paint.FILTER_BITMAP_FLAG));
 
         return  newBitmap;
+    }
+
+    public static APIService getFCMService(){
+        return FCMRetrofitClient.getClient(BASE_FCM_URL).create(APIService.class);
     }
 }

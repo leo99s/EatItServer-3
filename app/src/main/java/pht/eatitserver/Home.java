@@ -3,7 +3,6 @@ package pht.eatitserver;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -33,6 +32,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -43,8 +43,8 @@ import java.util.UUID;
 import info.hoang8f.widget.FButton;
 import pht.eatitserver.global.Global;
 import pht.eatitserver.model.Category;
+import pht.eatitserver.model.Token;
 import pht.eatitserver.onclick.ItemClickListener;
-import pht.eatitserver.service.OrderListener;
 import pht.eatitserver.viewholder.CategoryViewHolder;
 
 public class Home extends AppCompatActivity
@@ -111,9 +111,15 @@ public class Home extends AppCompatActivity
 
         loadCategory();
 
-        // Call service
-        Intent service = new Intent(Home.this, OrderListener.class);
-        startService(service);
+        // Send token
+        updateToken(FirebaseInstanceId.getInstance().getToken());
+    }
+
+    private void updateToken(String token) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference reference = database.getReference("Token");
+        Token child = new Token(token, true);
+        reference.child(Global.activeUser.getPhone()).setValue(child);
     }
 
     private void showAddDialog() {
