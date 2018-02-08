@@ -70,26 +70,42 @@ public class OrderList extends AppCompatActivity {
                 request
         ) {
             @Override
-            protected void populateViewHolder(OrderViewHolder viewHolder, final Request model, int position) {
+            protected void populateViewHolder(OrderViewHolder viewHolder, final Request model, final int position) {
                 viewHolder.id_order.setText(adapter.getRef(position).getKey());
                 viewHolder.phone_order.setText(model.getPhone());
                 viewHolder.address_order.setText(model.getAddress());
                 viewHolder.status_order.setText(Global.convertCodeToStatus(model.getStatus()));
 
-                viewHolder.setItemClickListener(new ItemClickListener() {
+                viewHolder.btnUpdate.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view, int position, boolean isLongClick) {
-                        if(!isLongClick){
-                            Intent trackOrder = new Intent(OrderList.this, TrackOrder.class);
-                            Global.currentRequest = model;
-                            startActivity(trackOrder);
-                        }
-                        /*else {
-                            Intent orderDetail = new Intent(OrderList.this, OrderDetail.class);
-                            Global.currentRequest = model;
-                            orderDetail.putExtra("orderID", adapter.getRef(position).getKey());
-                            startActivity(orderDetail);
-                        }*/
+                    public void onClick(View v) {
+                        showUpdateDialog(adapter.getRef(position).getKey(), adapter.getItem(position));
+                    }
+                });
+
+                viewHolder.btnDelete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        deleteOrder(adapter.getRef(position).getKey(), adapter.getItem(position));
+                    }
+                });
+
+                viewHolder.btnDetail.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent orderDetail = new Intent(OrderList.this, OrderDetail.class);
+                        Global.currentRequest = model;
+                        orderDetail.putExtra("orderID", adapter.getRef(position).getKey());
+                        startActivity(orderDetail);
+                    }
+                });
+
+                viewHolder.btnDirection.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent trackOrder = new Intent(OrderList.this, TrackOrder.class);
+                        Global.currentRequest = model;
+                        startActivity(trackOrder);
                     }
                 });
             }
@@ -99,20 +115,9 @@ public class OrderList extends AppCompatActivity {
         rcvOrder.setAdapter(adapter);
     }
 
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        if(item.getTitle().equals(Global.UPDATE)){
-            showUpdateDialog(adapter.getRef(item.getOrder()).getKey(), adapter.getItem(item.getOrder()));
-        }
-        else if(item.getTitle().equals(Global.DELETE)){
-            deleteOrder(adapter.getRef(item.getOrder()).getKey(), adapter.getItem(item.getOrder()));
-        }
-
-        return super.onContextItemSelected(item);
-    }
-
     private void deleteOrder(String key, Request item) {
         request.child(key).removeValue();
+        adapter.notifyDataSetChanged();
     }
 
     private void showUpdateDialog(final String key, final Request item) {
@@ -134,6 +139,7 @@ public class OrderList extends AppCompatActivity {
                 dialog.dismiss();
                 item.setStatus(String.valueOf(spinnerStatus.getSelectedIndex()));
                 request.child(key).setValue(item);
+                adapter.notifyDataSetChanged();
                 sendNotification(key, item);
             }
         });

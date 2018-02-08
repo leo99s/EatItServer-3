@@ -16,9 +16,11 @@ public class FirebaseID extends FirebaseInstanceIdService {
     }
 
     private void updateToken(String tokenRefreshed) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference token = database.getReference("Token");
-        Token child = new Token(tokenRefreshed, true);
-        token.child(Global.activeUser.getPhone()).setValue(child);
+        if(Global.activeUser != null){
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference token = database.getReference("Token");
+            Token child = new Token(tokenRefreshed, true);
+            token.child(Global.activeUser.getPhone()).setValue(child);
+        }
     }
 }
