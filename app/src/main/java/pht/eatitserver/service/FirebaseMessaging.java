@@ -11,7 +11,7 @@ import android.support.v4.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import java.util.Random;
-import pht.eatitserver.OrderList;
+import pht.eatitserver.RequestList;
 import pht.eatitserver.R;
 import pht.eatitserver.Welcome;
 import pht.eatitserver.global.Global;
@@ -33,7 +33,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
         String title = notification.getTitle();
         String body = notification.getBody();
 
-        Intent orderList = new Intent(this, OrderList.class);
+        Intent orderList = new Intent(this, RequestList.class);
         orderList.putExtra("phone", Global.activeUser.getPhone());
         orderList.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, orderList, PendingIntent.FLAG_ONE_SHOT);

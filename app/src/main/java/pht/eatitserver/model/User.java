@@ -2,45 +2,47 @@ package pht.eatitserver.model;
 
 public class User {
 
-    private String Phone, Name, Password, Admin;
+    private String phone, name, password, admin;
 
     public User() {
     }
 
-    public User(String name, String password) {
-        Name = name;
-        Password = password;
+    public User(String phone, String name, String password, String admin) {
+        this.phone = phone;
+        this.name = name;
+        this.password = password;
+        this.admin = admin;
     }
 
     public String getPhone() {
-        return Phone;
+        return phone;
     }
 
     public void setPhone(String phone) {
-        Phone = phone;
+        this.phone = phone;
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     public String getPassword() {
-        return Password;
+        return password;
     }
 
     public void setPassword(String password) {
-        Password = password;
+        this.password = password;
     }
 
     public String getAdmin() {
-        return Admin;
+        return admin;
     }
 
     public void setAdmin(String admin) {
-        Admin = admin;
+        this.admin = admin;
     }
 }

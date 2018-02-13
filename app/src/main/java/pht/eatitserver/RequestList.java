@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -24,57 +23,56 @@ import pht.eatitserver.model.Request;
 import pht.eatitserver.model.Response;
 import pht.eatitserver.model.Sender;
 import pht.eatitserver.model.Token;
-import pht.eatitserver.onclick.ItemClickListener;
 import pht.eatitserver.remote.APIService;
-import pht.eatitserver.viewholder.OrderViewHolder;
+import pht.eatitserver.viewholder.RequestViewHolder;
 import retrofit2.Call;
 import retrofit2.Callback;
 
-public class OrderList extends AppCompatActivity {
+public class RequestList extends AppCompatActivity {
 
-    RecyclerView rcvOrder;
+    RecyclerView rcvRequest;
     RecyclerView.LayoutManager layoutManager;
 
     MaterialSpinner spinnerStatus;
 
     FirebaseDatabase database;
     DatabaseReference request;
-    FirebaseRecyclerAdapter<Request, OrderViewHolder> adapter;
+    FirebaseRecyclerAdapter<Request, RequestViewHolder> adapter;
 
     APIService mService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_order_list);
+        setContentView(R.layout.activity_request_list);
 
         mService = Global.getFCMService();
 
         database = FirebaseDatabase.getInstance();
         request = database.getReference("Request");
 
-        rcvOrder = findViewById(R.id.rcvOrder);
-        rcvOrder.setHasFixedSize(true);
+        rcvRequest = findViewById(R.id.rcvRequest);
+        rcvRequest.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
-        rcvOrder.setLayoutManager(layoutManager);
+        rcvRequest.setLayoutManager(layoutManager);
 
-        loadOrder();
+        loadRequest();
     }
 
     // Load all requests (cart = order list / order = request list)
-    private void loadOrder() {
-        adapter = new FirebaseRecyclerAdapter<Request, OrderViewHolder>(
+    private void loadRequest() {
+        adapter = new FirebaseRecyclerAdapter<Request, RequestViewHolder>(
                 Request.class,
-                R.layout.item_order,
-                OrderViewHolder.class,
+                R.layout.item_request,
+                RequestViewHolder.class,
                 request
         ) {
             @Override
-            protected void populateViewHolder(OrderViewHolder viewHolder, final Request model, final int position) {
-                viewHolder.id_order.setText(adapter.getRef(position).getKey());
-                viewHolder.phone_order.setText(model.getPhone());
-                viewHolder.address_order.setText(model.getAddress());
-                viewHolder.status_order.setText(Global.convertCodeToStatus(model.getStatus()));
+            protected void populateViewHolder(RequestViewHolder viewHolder, final Request model, final int position) {
+                viewHolder.id_request.setText(adapter.getRef(position).getKey());
+                viewHolder.phone_request.setText(model.getPhone());
+                viewHolder.address_request.setText(model.getAddress());
+                viewHolder.status_request.setText(Global.convertCodeToStatus(model.getStatus()));
 
                 viewHolder.btnUpdate.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -86,47 +84,47 @@ public class OrderList extends AppCompatActivity {
                 viewHolder.btnDelete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        deleteOrder(adapter.getRef(position).getKey(), adapter.getItem(position));
+                        deleteRequest(adapter.getRef(position).getKey(), adapter.getItem(position));
                     }
                 });
 
                 viewHolder.btnDetail.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent orderDetail = new Intent(OrderList.this, OrderDetail.class);
+                        Intent requestDetail = new Intent(RequestList.this, RequestDetail.class);
                         Global.currentRequest = model;
-                        orderDetail.putExtra("orderID", adapter.getRef(position).getKey());
-                        startActivity(orderDetail);
+                        requestDetail.putExtra("requestID", adapter.getRef(position).getKey());
+                        startActivity(requestDetail);
                     }
                 });
 
                 viewHolder.btnDirection.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent trackOrder = new Intent(OrderList.this, TrackOrder.class);
+                        Intent requestTracking = new Intent(RequestList.this, RequestTracking.class);
                         Global.currentRequest = model;
-                        startActivity(trackOrder);
+                        startActivity(requestTracking);
                     }
                 });
             }
         };
 
         adapter.notifyDataSetChanged();
-        rcvOrder.setAdapter(adapter);
+        rcvRequest.setAdapter(adapter);
     }
 
-    private void deleteOrder(String key, Request item) {
+    private void deleteRequest(String key, Request item) {
         request.child(key).removeValue();
         adapter.notifyDataSetChanged();
     }
 
     private void showUpdateDialog(final String key, final Request item) {
-        final AlertDialog.Builder alert = new AlertDialog.Builder(OrderList.this);
-        alert.setTitle("Update order");
+        final AlertDialog.Builder alert = new AlertDialog.Builder(RequestList.this);
+        alert.setTitle("Update request");
         alert.setMessage("Please select a status :");
 
         LayoutInflater inflater = this.getLayoutInflater();
-        final View view = inflater.inflate(R.layout.update_order, null);
+        final View view = inflater.inflate(R.layout.update_request, null);
 
         spinnerStatus = view.findViewById(R.id.spinnerStatus);
         spinnerStatus.setItems("Placed", "On my way", "Shipped");
@@ -146,7 +144,7 @@ public class OrderList extends AppCompatActivity {
 
         alert.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialog, int i) {
                 dialog.dismiss();
             }
         });
@@ -164,7 +162,7 @@ public class OrderList extends AppCompatActivity {
                     Token clientToken = childDataSnapshot.getValue(Token.class);
 
                     // Create raw payload to send
-                    Notification notification = new Notification("Hoàng Tâm", "Your order " + key + " was updated !");
+                    Notification notification = new Notification("Hoàng Tâm", "Your request " + key + " was updated !");
                     Sender content = new Sender(clientToken.getToken(), notification);
                     mService.sendNotification(content)
                             .enqueue(new Callback<Response>() {
@@ -172,11 +170,11 @@ public class OrderList extends AppCompatActivity {
                                 public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
                                     if(response.code() == 200){
                                         if(response.body().success == 1){
-                                            Toast.makeText(OrderList.this, "Your order was update !", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(RequestList.this, "Your request was update !", Toast.LENGTH_SHORT).show();
                                             finish();
                                         }
                                         else {
-                                            Toast.makeText(OrderList.this, "Your order was update but we can't send notification !", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(RequestList.this, "Your request was update but we can't send notification !", Toast.LENGTH_SHORT).show();
                                             finish();
                                         }
                                     }

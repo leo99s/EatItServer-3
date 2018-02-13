@@ -6,18 +6,18 @@ import android.widget.TextView;
 import info.hoang8f.widget.FButton;
 import pht.eatitserver.R;
 
-public class OrderViewHolder extends RecyclerView.ViewHolder {
+public class RequestViewHolder extends RecyclerView.ViewHolder {
 
-    public TextView id_order, phone_order, address_order, status_order;
+    public TextView id_request, phone_request, address_request, status_request;
     public FButton btnUpdate, btnDelete, btnDetail, btnDirection;
 
-    public OrderViewHolder(View view) {
+    public RequestViewHolder(View view) {
         super(view);
 
-        id_order = view.findViewById(R.id.id_order);
-        phone_order = view.findViewById(R.id.phone_order);
-        address_order = view.findViewById(R.id.address_order);
-        status_order = view.findViewById(R.id.status_order);
+        id_request = view.findViewById(R.id.id_request);
+        phone_request = view.findViewById(R.id.phone_request);
+        address_request = view.findViewById(R.id.address_request);
+        status_request = view.findViewById(R.id.status_request);
 
         btnUpdate = view.findViewById(R.id.btnUpdate);
         btnDelete = view.findViewById(R.id.btnDelete);

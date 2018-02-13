@@ -26,7 +26,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,7 +42,7 @@ import retrofit2.Response;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
-public class TrackOrder extends FragmentActivity implements
+public class RequestTracking extends FragmentActivity implements
         OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -65,7 +64,7 @@ public class TrackOrder extends FragmentActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_track_order);
+        setContentView(R.layout.activity_request_tracking);
 
         mService = Global.getGeoCodeService();
 
@@ -281,7 +280,7 @@ public class TrackOrder extends FragmentActivity implements
 
     private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
 
-        ProgressDialog dialog = new ProgressDialog(TrackOrder.this);
+        ProgressDialog dialog = new ProgressDialog(RequestTracking.this);
 
         @Override
         protected void onPreExecute() {

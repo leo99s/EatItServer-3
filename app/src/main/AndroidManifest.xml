@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="pht.eatitserver">
 
     <!--
@@ -29,7 +30,7 @@
             android:label="@string/title_activity_home"
             android:theme="@style/AppTheme" />
         <activity android:name=".FoodList" />
-        <activity android:name=".OrderList" />
+        <activity android:name=".RequestList" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -43,10 +44,10 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".TrackOrder"
-            android:label="@string/title_activity_track_order" />
+            android:name=".RequestTracking"
+            android:label="Request Tracking" />
 
-        <activity android:name=".OrderDetail"></activity>
+        <activity android:name=".RequestDetail"></activity>
 
         <service android:name=".service.FirebaseID">
             <intent-filter>
