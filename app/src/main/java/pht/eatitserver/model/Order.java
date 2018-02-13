@@ -15,11 +15,11 @@ public class Order {
         this.discount = discount;
     }
 
-    public String getFood_id() {
+    public String getFood_ID() {
         return food_id;
     }
 
-    public void setFood_id(String food_id) {
+    public void setFood_ID(String food_id) {
         this.food_id = food_id;
     }
 
