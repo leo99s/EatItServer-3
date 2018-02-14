@@ -23,7 +23,7 @@ import pht.eatitserver.model.Request;
 import pht.eatitserver.model.Response;
 import pht.eatitserver.model.Sender;
 import pht.eatitserver.model.Token;
-import pht.eatitserver.remote.APIService;
+import pht.eatitserver.remote.FCMService;
 import pht.eatitserver.viewholder.RequestViewHolder;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,14 +39,14 @@ public class RequestList extends AppCompatActivity {
     DatabaseReference request;
     FirebaseRecyclerAdapter<Request, RequestViewHolder> adapter;
 
-    APIService mService;
+    FCMService mFCMService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_list);
 
-        mService = Global.getFCMService();
+        mFCMService = Global.getFCMAPI();
 
         database = FirebaseDatabase.getInstance();
         request = database.getReference("Request");
@@ -164,7 +164,7 @@ public class RequestList extends AppCompatActivity {
                     // Create raw payload to send
                     Notification notification = new Notification("Hoàng Tâm", "Your request " + key + " was updated !");
                     Sender content = new Sender(clientToken.getToken(), notification);
-                    mService.sendNotification(content)
+                    mFCMService.sendNotification(content)
                             .enqueue(new Callback<Response>() {
                                 @Override
                                 public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {

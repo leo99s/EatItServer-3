@@ -4,14 +4,11 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-
 import pht.eatitserver.model.Request;
 import pht.eatitserver.model.User;
-import pht.eatitserver.remote.APIService;
-import pht.eatitserver.remote.FCMRetrofitClient;
-import pht.eatitserver.remote.IGeoCoordinate;
-import pht.eatitserver.remote.MapRetrofitClient;
-import retrofit2.Retrofit;
+import pht.eatitserver.remote.FCMService;
+import pht.eatitserver.remote.MapService;
+import pht.eatitserver.remote.RetrofitClient;
 
 public class Global {
 
@@ -35,8 +32,8 @@ public class Global {
         }
     }
 
-    public static IGeoCoordinate getGeoCodeService(){
-        return MapRetrofitClient.getClient(BASE_MAP_URL).create(IGeoCoordinate.class);
+    public static MapService getMapAPI(){
+        return RetrofitClient.getMapClient(BASE_MAP_URL).create(MapService.class);
     }
 
     public static Bitmap scaleBitmap(Bitmap bitmap, int newWidth, int newHeight){
@@ -55,7 +52,7 @@ public class Global {
         return  newBitmap;
     }
 
-    public static APIService getFCMService(){
-        return FCMRetrofitClient.getClient(BASE_FCM_URL).create(APIService.class);
+    public static FCMService getFCMAPI(){
+        return RetrofitClient.getFCMClient(BASE_FCM_URL).create(FCMService.class);
     }
 }

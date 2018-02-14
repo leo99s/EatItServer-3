@@ -2,16 +2,17 @@ package pht.eatitserver.model;
 
 public class User {
 
-    private String phone, name, password, admin;
+    private String phone, name, password, admin, secureCode;
 
     public User() {
     }
 
-    public User(String phone, String name, String password, String admin) {
+    public User(String phone, String name, String password, String admin, String secureCode) {
         this.phone = phone;
         this.name = name;
         this.password = password;
         this.admin = admin;
+        this.secureCode = secureCode;
     }
 
     public String getPhone() {
@@ -44,5 +45,13 @@ public class User {
 
     public void setAdmin(String admin) {
         this.admin = admin;
+    }
+
+    public String getSecureCode() {
+        return secureCode;
+    }
+
+    public void setSecureCode(String secureCode) {
+        this.secureCode = secureCode;
     }
 }

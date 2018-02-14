@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import pht.eatitserver.global.DirectionsJSONParser;
 import pht.eatitserver.global.Global;
-import pht.eatitserver.remote.IGeoCoordinate;
+import pht.eatitserver.remote.MapService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -55,7 +55,7 @@ public class RequestTracking extends FragmentActivity implements
     private Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-    private IGeoCoordinate mService;
+    private MapService mMapService;
 
     private static int UPDATE_INTERVAL = 1000;
     private static int FASTEST_INTERVAL = 5000;
@@ -66,7 +66,7 @@ public class RequestTracking extends FragmentActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_tracking);
 
-        mService = Global.getGeoCodeService();
+        mMapService = Global.getMapAPI();
 
         if(ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
@@ -187,7 +187,7 @@ public class RequestTracking extends FragmentActivity implements
     }
 
     private void drawRoute(final LatLng myLocation, String address) {
-        mService.getGeoCode(address).enqueue(new Callback<String>() {
+        mMapService.getGeoCode(address).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 try {
@@ -215,7 +215,7 @@ public class RequestTracking extends FragmentActivity implements
                     mMap.addMarker(marker);
 
                     // Draw route
-                    mService.getDirection(
+                    mMapService.getDirection(
                             myLocation.latitude + "," + myLocation.longitude,
                             orderLocation.latitude + "," + orderLocation.longitude)
                             .enqueue(new Callback<String>() {
