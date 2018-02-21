@@ -6,27 +6,17 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class RetrofitClient {
 
-    private static Retrofit retrofit = null;
-
-    public static Retrofit getMapClient(String baseUrl){
-        if(retrofit == null){
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(baseUrl)
-                    .addConverterFactory(ScalarsConverterFactory.create())
-                    .build();
-        }
-
-        return retrofit;
+    public static Retrofit getFCMClient(String baseUrl){
+        return new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
     }
 
-    public static Retrofit getFCMClient(String baseUrl){
-        if(retrofit == null){
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(baseUrl)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-        }
-
-        return retrofit;
+    public static Retrofit getMapClient(String baseUrl){
+        return new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .build();
     }
 }

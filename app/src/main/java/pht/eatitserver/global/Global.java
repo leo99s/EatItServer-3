@@ -32,10 +32,6 @@ public class Global {
         }
     }
 
-    public static MapService getMapAPI(){
-        return RetrofitClient.getMapClient(BASE_MAP_URL).create(MapService.class);
-    }
-
     public static Bitmap scaleBitmap(Bitmap bitmap, int newWidth, int newHeight){
         Bitmap newBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888);
         float scaleX = newWidth / (float)bitmap.getWidth();
@@ -54,5 +50,9 @@ public class Global {
 
     public static FCMService getFCMAPI(){
         return RetrofitClient.getFCMClient(BASE_FCM_URL).create(FCMService.class);
+    }
+
+    public static MapService getMapAPI(){
+        return RetrofitClient.getMapClient(BASE_MAP_URL).create(MapService.class);
     }
 }

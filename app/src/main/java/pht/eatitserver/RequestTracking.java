@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -162,7 +163,6 @@ public class RequestTracking extends FragmentActivity implements
         if(ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
             requestRuntimePermission();
-            displayLocation();
         }
         else {
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
@@ -229,15 +229,14 @@ public class RequestTracking extends FragmentActivity implements
 
                                 }
                             });
-
                 } catch (JSONException e) {
-
+                    e.getMessage();
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
+                t.getMessage();
             }
         });
     }
