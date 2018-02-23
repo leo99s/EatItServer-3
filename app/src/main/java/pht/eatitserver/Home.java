@@ -271,10 +271,10 @@ public class Home extends AppCompatActivity
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        if(item.getTitle().equals(Global.UPDATE)){
+        if(item.getTitle().equals("Update")){
             showUpdateDialog(adapter.getRef(item.getOrder()).getKey(), adapter.getItem(item.getOrder()));
         }
-        else if(item.getTitle().equals(Global.DELETE)){
+        else if(item.getTitle().equals("Delete")){
             deleteCategory(adapter.getRef(item.getOrder()).getKey(), adapter.getItem(item.getOrder()));
         }
 
@@ -423,8 +423,9 @@ public class Home extends AppCompatActivity
 
         if (id == R.id.nav_category) {
             // Handle the camera action
-        } else if (id == R.id.nav_cart) {
-
+        } else if (id == R.id.nav_banner) {
+            Intent bannerList = new Intent(Home.this, BannerList.class);
+            startActivity(bannerList);
         } else if (id == R.id.nav_order) {
             Intent orderList = new Intent(Home.this, RequestList.class);
             startActivity(orderList);

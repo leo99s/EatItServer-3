@@ -13,9 +13,7 @@
         android:id="@+id/rcvFood"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical">
-
-    </android.support.v7.widget.RecyclerView>
+        android:scrollbars="vertical" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/btnAdd"

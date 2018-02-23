@@ -15,8 +15,6 @@ public class Global {
     public static User activeUser;
     public static Request currentRequest;
     public static final int PICK_IMAGE_REQUEST = 71;
-    public static final String UPDATE = "Update";
-    public static final String DELETE = "Delete";
     public static final String BASE_MAP_URL = "https://maps.googleapis.com";
     public static final String BASE_FCM_URL = "https://fcm.googleapis.com";
 

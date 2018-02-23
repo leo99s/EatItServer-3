@@ -36,7 +36,7 @@ public class CategoryViewHolder extends RecyclerView.ViewHolder implements View.
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         menu.setHeaderTitle("Select an action");
-        menu.add(0, 0, getAdapterPosition(), Global.UPDATE);
-        menu.add(0, 1, getAdapterPosition(), Global.DELETE);
+        menu.add(0, 0, getAdapterPosition(), "Update");
+        menu.add(0, 1, getAdapterPosition(), "Delete");
     }
 }

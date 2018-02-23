@@ -11,10 +11,10 @@
             android:title="Category" />
 
         <item
-            android:id="@+id/nav_cart"
-            android:icon="@drawable/ic_shopping_cart"
+            android:id="@+id/nav_banner"
+            android:icon="@drawable/ic_photo_library"
             android:iconTint="@android:color/white"
-            android:title="Cart" />
+            android:title="Banner" />
 
         <item
             android:id="@+id/nav_order"

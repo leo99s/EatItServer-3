@@ -5,33 +5,19 @@ import android.view.ContextMenu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import pht.eatitserver.R;
 import pht.eatitserver.global.Global;
-import pht.eatitserver.onclick.ItemClickListener;
 
-public class FoodViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
+public class BannerViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
     public TextView name_food;
     public ImageView image_food;
 
-    private ItemClickListener itemClickListener;
-
-    public FoodViewHolder(View view) {
+    public BannerViewHolder(View view) {
         super(view);
         name_food = view.findViewById(R.id.name_food);
         image_food = view.findViewById(R.id.image_food);
-        view.setOnClickListener(this);
         view.setOnCreateContextMenuListener(this);
-    }
-
-    public void setItemClickListener(ItemClickListener itemClickListener) {
-        this.itemClickListener = itemClickListener;
-    }
-
-    @Override
-    public void onClick(View view) {
-        itemClickListener.onClick(view, getAdapterPosition(), false);
     }
 
     @Override
