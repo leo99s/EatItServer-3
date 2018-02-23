@@ -21,9 +21,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -46,6 +48,7 @@ import pht.eatitserver.model.Category;
 import pht.eatitserver.model.Token;
 import pht.eatitserver.onclick.ItemClickListener;
 import pht.eatitserver.viewholder.CategoryViewHolder;
+import pht.eatitserver.viewholder.FoodViewHolder;
 
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -232,12 +235,23 @@ public class Home extends AppCompatActivity
     }
 
     private void loadCategory() {
-        adapter = new FirebaseRecyclerAdapter<Category, CategoryViewHolder>(Category.class, R.layout.item_category, CategoryViewHolder.class, category) {
+        FirebaseRecyclerOptions<Category> options = new FirebaseRecyclerOptions.Builder<Category>()
+                .setQuery(category, Category.class)
+                .build();
+
+        adapter = new FirebaseRecyclerAdapter<Category, CategoryViewHolder>(options) {
             @Override
-            protected void populateViewHolder(CategoryViewHolder viewHolder, Category model, int position) {
-                viewHolder.name_category.setText(model.getName());
-                Picasso.with(Home.this).load(model.getImage()).into(viewHolder.image_category);
-                viewHolder.setItemClickListener(new ItemClickListener() {
+            public CategoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_category, parent, false);
+                return new CategoryViewHolder(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull CategoryViewHolder holder, int position, @NonNull Category model) {
+                holder.name_category.setText(model.getName());
+                Picasso.with(Home.this).load(model.getImage()).into(holder.image_category);
+                holder.setItemClickListener(new ItemClickListener() {
                     @Override
                     public void onClick(View view, int position, boolean isLongClick) {
                         // Send category_id to new activity
@@ -250,6 +264,7 @@ public class Home extends AppCompatActivity
             }
         };
 
+        adapter.startListening();
         adapter.notifyDataSetChanged(); // Refresh data if changed
         rcvCategory.setAdapter(adapter);
     }

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import info.hoang8f.widget.FButton;
+
 public class Welcome extends AppCompatActivity {
 
     TextView txtSlogan;

@@ -15,14 +15,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -95,6 +98,12 @@ public class FoodList extends AppCompatActivity {
         if(!category_id.isEmpty() && category_id != null){
             loadFood(category_id);
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
     }
 
     private void showAddDialog() {
@@ -215,18 +224,26 @@ public class FoodList extends AppCompatActivity {
     }
 
     private void loadFood(String category_id) {
-        adapter = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(
-                Food.class,
-                R.layout.item_food,
-                FoodViewHolder.class,
-                food.orderByChild("category_id").equalTo(category_id)
-        ) {
-            @Override
-            protected void populateViewHolder(FoodViewHolder viewHolder, Food model, int position) {
-                viewHolder.name_food.setText(model.getName());
-                Picasso.with(getBaseContext()).load(model.getImage()).into(viewHolder.image_food);
+        Query query = food.orderByChild("category_id").equalTo(category_id);
 
-                viewHolder.setItemClickListener(new ItemClickListener() {
+        FirebaseRecyclerOptions<Food> options = new FirebaseRecyclerOptions.Builder<Food>()
+                .setQuery(query, Food.class)
+                .build();
+
+        adapter = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(options) {
+            @Override
+            public FoodViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_food, parent, false);
+                return new FoodViewHolder(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull FoodViewHolder holder, int position, @NonNull Food model) {
+                holder.name_food.setText(model.getName());
+                Picasso.with(getBaseContext()).load(model.getImage()).into(holder.image_food);
+
+                holder.setItemClickListener(new ItemClickListener() {
                     @Override
                     public void onClick(View view, int position, boolean isLongClick) {
 
@@ -235,6 +252,7 @@ public class FoodList extends AppCompatActivity {
             }
         };
 
+        adapter.startListening();
         adapter.notifyDataSetChanged();
         rcvFood.setAdapter(adapter);
     }

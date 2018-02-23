@@ -2,6 +2,7 @@ package pht.eatitserver;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,8 +10,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,12 +21,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.jaredrummler.materialspinner.MaterialSpinner;
 import pht.eatitserver.global.Global;
+import pht.eatitserver.model.Category;
 import pht.eatitserver.model.Notification;
 import pht.eatitserver.model.Request;
 import pht.eatitserver.model.Response;
 import pht.eatitserver.model.Sender;
 import pht.eatitserver.model.Token;
 import pht.eatitserver.remote.FCMService;
+import pht.eatitserver.viewholder.CategoryViewHolder;
 import pht.eatitserver.viewholder.RequestViewHolder;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -59,36 +64,48 @@ public class RequestList extends AppCompatActivity {
         loadRequest();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
+
     // Load all requests (cart = order list / order = request list)
     private void loadRequest() {
-        adapter = new FirebaseRecyclerAdapter<Request, RequestViewHolder>(
-                Request.class,
-                R.layout.item_request,
-                RequestViewHolder.class,
-                request
-        ) {
-            @Override
-            protected void populateViewHolder(RequestViewHolder viewHolder, final Request model, final int position) {
-                viewHolder.id_request.setText(adapter.getRef(position).getKey());
-                viewHolder.phone_request.setText(model.getPhone());
-                viewHolder.address_request.setText(model.getAddress());
-                viewHolder.status_request.setText(Global.convertCodeToStatus(model.getStatus()));
+        FirebaseRecyclerOptions<Request> options = new FirebaseRecyclerOptions.Builder<Request>()
+                .setQuery(request, Request.class)
+                .build();
 
-                viewHolder.btnUpdate.setOnClickListener(new View.OnClickListener() {
+        adapter = new FirebaseRecyclerAdapter<Request, RequestViewHolder>(options) {
+            @Override
+            public RequestViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_request, parent, false);
+                return new RequestViewHolder(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull RequestViewHolder holder, final int position, @NonNull final Request model) {
+                holder.id_request.setText(adapter.getRef(position).getKey());
+                holder.phone_request.setText(model.getPhone());
+                holder.address_request.setText(model.getAddress());
+                holder.status_request.setText(Global.convertCodeToStatus(model.getStatus()));
+
+                holder.btnUpdate.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         showUpdateDialog(adapter.getRef(position).getKey(), adapter.getItem(position));
                     }
                 });
 
-                viewHolder.btnDelete.setOnClickListener(new View.OnClickListener() {
+                holder.btnDelete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         deleteRequest(adapter.getRef(position).getKey(), adapter.getItem(position));
                     }
                 });
 
-                viewHolder.btnDetail.setOnClickListener(new View.OnClickListener() {
+                holder.btnDetail.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent requestDetail = new Intent(RequestList.this, RequestDetail.class);
@@ -98,7 +115,7 @@ public class RequestList extends AppCompatActivity {
                     }
                 });
 
-                viewHolder.btnDirection.setOnClickListener(new View.OnClickListener() {
+                holder.btnDirection.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent requestTracking = new Intent(RequestList.this, RequestTracking.class);
@@ -109,6 +126,7 @@ public class RequestList extends AppCompatActivity {
             }
         };
 
+        adapter.startListening();
         adapter.notifyDataSetChanged();
         rcvRequest.setAdapter(adapter);
     }
