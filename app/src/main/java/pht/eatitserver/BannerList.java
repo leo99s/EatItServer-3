@@ -60,7 +60,7 @@ public class BannerList extends AppCompatActivity {
     FirebaseRecyclerAdapter<Banner, BannerViewHolder> adapter;
 
     Banner newBanner;
-    Uri uri;    // The local path of image
+    Uri filePath;    // The local path of image
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +87,21 @@ public class BannerList extends AppCompatActivity {
         });
 
         loadBanner();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (adapter != null) {
+            adapter.startListening();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
     }
 
     private void loadBanner() {
@@ -181,13 +196,13 @@ public class BannerList extends AppCompatActivity {
                 && resultCode == RESULT_OK
                 && data != null
                 && data.getData() != null){
-            uri = data.getData();
+            filePath = data.getData();
             btnBrowse.setText("Picked");
         }
     }
 
     private void uploadImage() {
-        if(uri != null){
+        if(filePath != null){
             final ProgressDialog dialog = new ProgressDialog(this);
             dialog.setMessage("Uploading...");
             dialog.show();
@@ -195,7 +210,7 @@ public class BannerList extends AppCompatActivity {
             String imageName = UUID.randomUUID().toString();
             final StorageReference imageFolder = reference.child("images/" + imageName);
 
-            imageFolder.putFile(uri)
+            imageFolder.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -308,7 +323,7 @@ public class BannerList extends AppCompatActivity {
     }
 
     private void changeImage(final Banner item) {
-        if(uri != null){
+        if(filePath != null){
             final ProgressDialog dialog = new ProgressDialog(this);
             dialog.setMessage("Uploading...");
             dialog.show();
@@ -316,7 +331,7 @@ public class BannerList extends AppCompatActivity {
             String imageName = UUID.randomUUID().toString();
             final StorageReference imageFolder = reference.child("images/" + imageName);
 
-            imageFolder.putFile(uri)
+            imageFolder.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {

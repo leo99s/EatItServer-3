@@ -166,14 +166,25 @@ public class RequestTracking extends FragmentActivity implements
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
             if(mLastLocation != null){
-                // Add marker & move camera for your location
+                // Add marker & move camera for my location
                 LatLng myLocation  = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(myLocation).title("My Location"));
+                mMap.addMarker(new MarkerOptions().position(myLocation).title("My location"));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
 
-                // Add marker for the order & draw route
-                drawRoute();
+                // Add marker for order location
+                String[] regex = Global.currentRequest.getLatlng().split(",");
+                LatLng orderLocation = new LatLng(Double.parseDouble(regex[0]), Double.parseDouble(regex[1]));
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.box);
+                bitmap = Global.scaleBitmap(bitmap, 70, 70);
+                MarkerOptions marker = new MarkerOptions()
+                        .position(orderLocation)
+                        .title(Global.currentRequest.getName())
+                        .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+                mMap.addMarker(marker);
+
+                // Draw route
+                drawRoute(myLocation, orderLocation);
             }
             else {
                 //Toast.makeText(this, "Can't find your location !", Toast.LENGTH_SHORT).show();
@@ -181,19 +192,8 @@ public class RequestTracking extends FragmentActivity implements
         }
     }
 
-    private void drawRoute() {
-        String[] regex = Global.currentRequest.getLatlng().split(",");
-        LatLng orderLocation = new LatLng(Double.parseDouble(regex[0]), Double.parseDouble(regex[1]));
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.box);
-        bitmap = Global.scaleBitmap(bitmap, 70, 70);
-        MarkerOptions marker = new MarkerOptions()
-                .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                .title(Global.currentRequest.getName())
-                .position(orderLocation);
-        mMap.addMarker(marker);
-
-        // Draw route
-        mMapService.getDirection(mLastLocation.getLatitude() + "," + mLastLocation.getLongitude(),
+    private void drawRoute(LatLng myLocation, LatLng orderLocation) {
+        mMapService.getDirection(myLocation.latitude + "," + myLocation.longitude,
                 orderLocation.latitude + "," + orderLocation.longitude)
                 .enqueue(new Callback<String>() {
                     @Override

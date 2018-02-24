@@ -68,7 +68,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     StorageReference reference;
 
     Category newCategory;
-    Uri uri;
+    Uri filePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +114,21 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         // Send token
         updateToken(FirebaseInstanceId.getInstance().getToken());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (adapter != null) {
+            adapter.startListening();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
     }
 
     private void updateToken(String token) {
@@ -221,13 +236,13 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 && resultCode == RESULT_OK
                 && data != null
                 && data.getData() != null){
-            uri = data.getData();
+            filePath = data.getData();
             btnBrowse.setText("Picked");
         }
     }
 
     private void uploadImage() {
-        if(uri != null){
+        if(filePath != null){
             final ProgressDialog dialog = new ProgressDialog(this);
             dialog.setMessage("Uploading...");
             dialog.show();
@@ -235,7 +250,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             String imageName = UUID.randomUUID().toString();
             final StorageReference imageFolder = reference.child("images/" + imageName);
 
-            imageFolder.putFile(uri)
+            imageFolder.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -331,7 +346,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     }
 
     private void changeImage(final Category item) {
-        if(uri != null){
+        if(filePath != null){
             final ProgressDialog dialog = new ProgressDialog(this);
             dialog.setMessage("Uploading...");
             dialog.show();
@@ -339,7 +354,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             String imageName = UUID.randomUUID().toString();
             final StorageReference imageFolder = reference.child("images/" + imageName);
 
-            imageFolder.putFile(uri)
+            imageFolder.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
