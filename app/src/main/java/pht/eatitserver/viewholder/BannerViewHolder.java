@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import pht.eatitserver.R;
-import pht.eatitserver.global.Global;
 
 public class BannerViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 

@@ -18,7 +18,7 @@ public class Global {
     public static final String BASE_MAP_URL = "https://maps.googleapis.com";
     public static final String BASE_FCM_URL = "https://fcm.googleapis.com";
 
-    public static String convertCodeToStatus(String code){
+    public static String getDeliveryStatus(String code){
         if(code.equals("0")){
             return "Placed";
         }

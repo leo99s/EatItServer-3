@@ -48,10 +48,8 @@ import pht.eatitserver.model.Category;
 import pht.eatitserver.model.Token;
 import pht.eatitserver.onclick.ItemClickListener;
 import pht.eatitserver.viewholder.CategoryViewHolder;
-import pht.eatitserver.viewholder.FoodViewHolder;
 
-public class Home extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class Home extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     DrawerLayout drawer;
 
@@ -125,6 +123,42 @@ public class Home extends AppCompatActivity
         reference.child(Global.activeUser.getPhone()).setValue(child);
     }
 
+    private void loadCategory() {
+        FirebaseRecyclerOptions<Category> options = new FirebaseRecyclerOptions.Builder<Category>()
+                .setQuery(category, Category.class)
+                .build();
+
+        adapter = new FirebaseRecyclerAdapter<Category, CategoryViewHolder>(options) {
+            @Override
+            public CategoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_category, parent, false);
+                return new CategoryViewHolder(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull CategoryViewHolder holder, int position, @NonNull Category model) {
+                holder.name_category.setText(model.getName());
+                Picasso.with(Home.this).load(model.getImage()).into(holder.image_category);
+
+                holder.setItemClickListener(new ItemClickListener() {
+                    @Override
+                    public void onClick(View view, int position, boolean isLongClick) {
+                        // Send category_id to new activity
+                        Intent foodList = new Intent(Home.this, FoodList.class);
+                        foodList.putExtra("category_id", adapter.getRef(position).getKey());
+                        startActivity(foodList);
+                        finish();
+                    }
+                });
+            }
+        };
+
+        adapter.startListening();
+        adapter.notifyDataSetChanged(); // Refresh data if changed
+        rcvCategory.setAdapter(adapter);
+    }
+
     private void showAddDialog() {
         final AlertDialog.Builder alert = new AlertDialog.Builder(Home.this);
         alert.setIcon(R.drawable.ic_shopping_cart);
@@ -174,6 +208,24 @@ public class Home extends AppCompatActivity
         alert.show();
     }
 
+    private void pickImage() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Pick an image"), Global.PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == Global.PICK_IMAGE_REQUEST
+                && resultCode == RESULT_OK
+                && data != null
+                && data.getData() != null){
+            uri = data.getData();
+            btnBrowse.setText("Picked");
+        }
+    }
+
     private void uploadImage() {
         if(uri != null){
             final ProgressDialog dialog = new ProgressDialog(this);
@@ -216,59 +268,6 @@ public class Home extends AppCompatActivity
         }
     }
 
-    private void pickImage() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Pick an image"), Global.PICK_IMAGE_REQUEST);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == Global.PICK_IMAGE_REQUEST
-                && resultCode == RESULT_OK
-                && data != null
-                && data.getData() != null){
-            uri = data.getData();
-            btnBrowse.setText("Picked");
-        }
-    }
-
-    private void loadCategory() {
-        FirebaseRecyclerOptions<Category> options = new FirebaseRecyclerOptions.Builder<Category>()
-                .setQuery(category, Category.class)
-                .build();
-
-        adapter = new FirebaseRecyclerAdapter<Category, CategoryViewHolder>(options) {
-            @Override
-            public CategoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_category, parent, false);
-                return new CategoryViewHolder(view);
-            }
-
-            @Override
-            protected void onBindViewHolder(@NonNull CategoryViewHolder holder, int position, @NonNull Category model) {
-                holder.name_category.setText(model.getName());
-                Picasso.with(Home.this).load(model.getImage()).into(holder.image_category);
-                holder.setItemClickListener(new ItemClickListener() {
-                    @Override
-                    public void onClick(View view, int position, boolean isLongClick) {
-                        // Send category_id to new activity
-                        Intent foodList = new Intent(Home.this, FoodList.class);
-                        foodList.putExtra("category_id", adapter.getRef(position).getKey());
-                        startActivity(foodList);
-                        finish();
-                    }
-                });
-            }
-        };
-
-        adapter.startListening();
-        adapter.notifyDataSetChanged(); // Refresh data if changed
-        rcvCategory.setAdapter(adapter);
-    }
-
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         if(item.getTitle().equals("Update")){
@@ -279,28 +278,6 @@ public class Home extends AppCompatActivity
         }
 
         return super.onContextItemSelected(item);
-    }
-
-    private void deleteCategory(String key, Category item) {
-        DatabaseReference food = database.getReference("Food");
-        Query foodByCategory = food.orderByChild("category_id").equalTo(key);
-
-        foodByCategory.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot child : dataSnapshot.getChildren()){
-                    child.getRef().removeValue();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        category.child(key).removeValue();
-        Toast.makeText(this, item.getName() + " was deleted !", Toast.LENGTH_SHORT).show();
     }
 
     private void showUpdateDialog(final String key, final Category item) {
@@ -391,6 +368,28 @@ public class Home extends AppCompatActivity
                         }
                     });
         }
+    }
+
+    private void deleteCategory(String key, Category item) {
+        DatabaseReference food = database.getReference("Food");
+        Query foodByCategory = food.orderByChild("category_id").equalTo(key);
+
+        foodByCategory.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot child : dataSnapshot.getChildren()){
+                    child.getRef().removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        category.child(key).removeValue();
+        Toast.makeText(this, item.getName() + " was deleted !", Toast.LENGTH_SHORT).show();
     }
 
     @Override

@@ -10,7 +10,7 @@ import pht.eatitserver.viewholder.OrderAdapter;
 
 public class RequestDetail extends AppCompatActivity {
 
-    TextView id_request, phone_request, address_request, total_request, comment_request;
+    TextView id_request, phone_request, address_request, total_price_request, message_request;
     RecyclerView rcvOrder;
     RecyclerView.LayoutManager layoutManager;
     String requestID = "";
@@ -23,8 +23,8 @@ public class RequestDetail extends AppCompatActivity {
         id_request = findViewById(R.id.id_request);
         phone_request = findViewById(R.id.phone_request);
         address_request = findViewById(R.id.address_request);
-        total_request = findViewById(R.id.total_request);
-        comment_request = findViewById(R.id.comment_request);
+        total_price_request = findViewById(R.id.total_price_request);
+        message_request = findViewById(R.id.message_request);
 
         rcvOrder = findViewById(R.id.rcvOrder);
         rcvOrder.setHasFixedSize(true);
@@ -38,9 +38,9 @@ public class RequestDetail extends AppCompatActivity {
         // Set values of the current request
         id_request.setText(requestID);
         phone_request.setText(Global.activeUser.getPhone());
-        total_request.setText(Global.currentRequest.getTotal());
         address_request.setText(Global.currentRequest.getAddress());
-        comment_request.setText(Global.currentRequest.getComment());
+        total_price_request.setText(Global.currentRequest.getTotalPrice());
+        message_request.setText(Global.currentRequest.getMessage());
 
         OrderAdapter adapter = new OrderAdapter(Global.currentRequest.getOrders());
         adapter.notifyDataSetChanged();

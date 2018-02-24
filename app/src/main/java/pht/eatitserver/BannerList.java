@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -33,14 +32,11 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.picasso.Picasso;
-
 import java.util.HashMap;
 import java.util.UUID;
-
 import info.hoang8f.widget.FButton;
 import pht.eatitserver.global.Global;
 import pht.eatitserver.model.Banner;
-import pht.eatitserver.model.Food;
 import pht.eatitserver.viewholder.BannerViewHolder;
 
 public class BannerList extends AppCompatActivity {
@@ -91,12 +87,6 @@ public class BannerList extends AppCompatActivity {
         });
 
         loadBanner();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        adapter.stopListening();
     }
 
     private void loadBanner() {

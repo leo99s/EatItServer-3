@@ -13,7 +13,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -28,7 +27,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
@@ -168,17 +166,14 @@ public class RequestTracking extends FragmentActivity implements
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
             if(mLastLocation != null){
-                double latitude = mLastLocation.getLatitude();
-                double longitude = mLastLocation.getLongitude();
-
                 // Add marker & move camera for your location
-                LatLng myLocation  = new LatLng(latitude, longitude);
+                LatLng myLocation  = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
                 mMap.addMarker(new MarkerOptions().position(myLocation).title("My Location"));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
 
                 // Add marker for the order & draw route
-                drawRoute(myLocation, Global.currentRequest.getAddress());
+                drawRoute();
             }
             else {
                 //Toast.makeText(this, "Can't find your location !", Toast.LENGTH_SHORT).show();
@@ -186,59 +181,31 @@ public class RequestTracking extends FragmentActivity implements
         }
     }
 
-    private void drawRoute(final LatLng myLocation, String address) {
-        mMapService.getGeoCode(address).enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                try {
-                    JSONObject object = new JSONObject(response.body().toString());
+    private void drawRoute() {
+        String[] regex = Global.currentRequest.getLatlng().split(",");
+        LatLng orderLocation = new LatLng(Double.parseDouble(regex[0]), Double.parseDouble(regex[1]));
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.box);
+        bitmap = Global.scaleBitmap(bitmap, 70, 70);
+        MarkerOptions marker = new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                .title(Global.currentRequest.getName())
+                .position(orderLocation);
+        mMap.addMarker(marker);
 
-                    String lat = ((JSONArray)object.get("results"))
-                            .getJSONObject(0)
-                            .getJSONObject("geometry")
-                            .getJSONObject("location")
-                            .get("lat").toString();
+        // Draw route
+        mMapService.getDirection(mLastLocation.getLatitude() + "," + mLastLocation.getLongitude(),
+                orderLocation.latitude + "," + orderLocation.longitude)
+                .enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        new ParserTask().execute(response.body().toString());
+                    }
 
-                    String lng = ((JSONArray)object.get("results"))
-                            .getJSONObject(0)
-                            .getJSONObject("geometry")
-                            .getJSONObject("location")
-                            .get("lng").toString();
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
 
-                    LatLng orderLocation = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
-                    Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.box);
-                    bitmap = Global.scaleBitmap(bitmap, 70, 70);
-                    MarkerOptions marker = new MarkerOptions()
-                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                            .title(Global.currentRequest.getName())
-                            .position(orderLocation);
-                    mMap.addMarker(marker);
-
-                    // Draw route
-                    mMapService.getDirection(
-                            myLocation.latitude + "," + myLocation.longitude,
-                            orderLocation.latitude + "," + orderLocation.longitude)
-                            .enqueue(new Callback<String>() {
-                                @Override
-                                public void onResponse(Call<String> call, Response<String> response) {
-                                    new ParserTask().execute(response.body().toString());
-                                }
-
-                                @Override
-                                public void onFailure(Call<String> call, Throwable t) {
-
-                                }
-                            });
-                } catch (JSONException e) {
-                    e.getMessage();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                t.getMessage();
-            }
-        });
+                    }
+                });
     }
 
     @Override

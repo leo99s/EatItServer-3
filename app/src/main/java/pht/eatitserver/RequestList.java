@@ -21,14 +21,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.jaredrummler.materialspinner.MaterialSpinner;
 import pht.eatitserver.global.Global;
-import pht.eatitserver.model.Category;
 import pht.eatitserver.model.Notification;
 import pht.eatitserver.model.Request;
 import pht.eatitserver.model.Response;
 import pht.eatitserver.model.Sender;
 import pht.eatitserver.model.Token;
 import pht.eatitserver.remote.FCMService;
-import pht.eatitserver.viewholder.CategoryViewHolder;
 import pht.eatitserver.viewholder.RequestViewHolder;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,7 +36,7 @@ public class RequestList extends AppCompatActivity {
     RecyclerView rcvRequest;
     RecyclerView.LayoutManager layoutManager;
 
-    MaterialSpinner spinnerStatus;
+    MaterialSpinner spinnerDeliveryStatus;
 
     FirebaseDatabase database;
     DatabaseReference request;
@@ -64,12 +62,6 @@ public class RequestList extends AppCompatActivity {
         loadRequest();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        adapter.stopListening();
-    }
-
     // Load all requests (cart = order list / order = request list)
     private void loadRequest() {
         FirebaseRecyclerOptions<Request> options = new FirebaseRecyclerOptions.Builder<Request>()
@@ -89,7 +81,7 @@ public class RequestList extends AppCompatActivity {
                 holder.id_request.setText(adapter.getRef(position).getKey());
                 holder.phone_request.setText(model.getPhone());
                 holder.address_request.setText(model.getAddress());
-                holder.status_request.setText(Global.convertCodeToStatus(model.getStatus()));
+                holder.delivery_status_request.setText(Global.getDeliveryStatus(model.getDeliveryStatus()));
 
                 holder.btnUpdate.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -131,11 +123,6 @@ public class RequestList extends AppCompatActivity {
         rcvRequest.setAdapter(adapter);
     }
 
-    private void deleteRequest(String key, Request item) {
-        request.child(key).removeValue();
-        adapter.notifyDataSetChanged();
-    }
-
     private void showUpdateDialog(final String key, final Request item) {
         final AlertDialog.Builder alert = new AlertDialog.Builder(RequestList.this);
         alert.setTitle("Update request");
@@ -144,8 +131,8 @@ public class RequestList extends AppCompatActivity {
         LayoutInflater inflater = this.getLayoutInflater();
         final View view = inflater.inflate(R.layout.update_request, null);
 
-        spinnerStatus = view.findViewById(R.id.spinnerStatus);
-        spinnerStatus.setItems("Placed", "On my way", "Shipped");
+        spinnerDeliveryStatus = view.findViewById(R.id.spinnerDeliveryStatus);
+        spinnerDeliveryStatus.setItems("Placed", "On my way", "Shipped");
 
         alert.setView(view);
 
@@ -153,7 +140,7 @@ public class RequestList extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int i) {
                 dialog.dismiss();
-                item.setStatus(String.valueOf(spinnerStatus.getSelectedIndex()));
+                item.setDeliveryStatus(String.valueOf(spinnerDeliveryStatus.getSelectedIndex()));
                 request.child(key).setValue(item);
                 adapter.notifyDataSetChanged();
                 sendNotification(key, item);
@@ -180,7 +167,7 @@ public class RequestList extends AppCompatActivity {
                     Token clientToken = childDataSnapshot.getValue(Token.class);
 
                     // Create raw payload to send
-                    Notification notification = new Notification("Hoàng Tâm", "Your request " + key + " was updated !");
+                    Notification notification = new Notification("Eat It", "Your request " + key + " was updated !");
                     Sender content = new Sender(clientToken.getToken(), notification);
                     mFCMService.sendNotification(content)
                             .enqueue(new Callback<Response>() {
@@ -211,5 +198,10 @@ public class RequestList extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void deleteRequest(String key, Request item) {
+        request.child(key).removeValue();
+        adapter.notifyDataSetChanged();
     }
 }

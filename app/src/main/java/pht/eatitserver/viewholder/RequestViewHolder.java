@@ -8,7 +8,7 @@ import pht.eatitserver.R;
 
 public class RequestViewHolder extends RecyclerView.ViewHolder {
 
-    public TextView id_request, phone_request, address_request, status_request;
+    public TextView id_request, phone_request, address_request, delivery_status_request;
     public FButton btnUpdate, btnDelete, btnDetail, btnDirection;
 
     public RequestViewHolder(View view) {
@@ -17,7 +17,7 @@ public class RequestViewHolder extends RecyclerView.ViewHolder {
         id_request = view.findViewById(R.id.id_request);
         phone_request = view.findViewById(R.id.phone_request);
         address_request = view.findViewById(R.id.address_request);
-        status_request = view.findViewById(R.id.status_request);
+        delivery_status_request = view.findViewById(R.id.delivery_status_request);
 
         btnUpdate = view.findViewById(R.id.btnUpdate);
         btnDelete = view.findViewById(R.id.btnDelete);

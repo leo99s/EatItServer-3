@@ -17,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.Toast;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -35,7 +34,6 @@ import com.squareup.picasso.Picasso;
 import java.util.UUID;
 import info.hoang8f.widget.FButton;
 import pht.eatitserver.global.Global;
-import pht.eatitserver.model.Category;
 import pht.eatitserver.model.Food;
 import pht.eatitserver.onclick.ItemClickListener;
 import pht.eatitserver.viewholder.FoodViewHolder;
@@ -98,12 +96,6 @@ public class FoodList extends AppCompatActivity {
         if(!category_id.isEmpty() && category_id != null){
             loadFood(category_id);
         }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        adapter.stopListening();
     }
 
     private void loadFood(String category_id) {
@@ -177,6 +169,7 @@ public class FoodList extends AppCompatActivity {
                 dialog.dismiss();
                 if(newFood != null){
                     food.push().setValue(newFood);
+                    loadFood(category_id);
                     Snackbar.make(root_layout, newFood.getName() + " was added !", Snackbar.LENGTH_LONG).show();
                 }
             }
@@ -315,6 +308,7 @@ public class FoodList extends AppCompatActivity {
                 item.setPrice(edtFoodPrice.getText().toString());
                 item.setDiscount(edtFoodDiscount.getText().toString()); // item.setImage() in changeImage()
                 food.child(key).setValue(item);
+                loadFood(category_id);
                 Snackbar.make(root_layout, item.getName() + " was updated !", Snackbar.LENGTH_LONG).show();
             }
         });

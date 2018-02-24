@@ -6,9 +6,6 @@ import retrofit2.http.Query;
 
 public interface MapService {
 
-    @GET("maps/api/geocode/json")
-    Call<String> getGeoCode(@Query("address") String address);
-
     @GET("maps/api/directions/json")
     Call<String> getDirection(@Query("origin") String origin, @Query("destination") String destination);
 }

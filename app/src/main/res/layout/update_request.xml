@@ -8,7 +8,7 @@
     app:cardElevation="4dp">
 
     <com.jaredrummler.materialspinner.MaterialSpinner
-        android:id="@+id/spinnerStatus"
+        android:id="@+id/spinnerDeliveryStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import pht.eatitserver.R;
-import pht.eatitserver.global.Global;
 import pht.eatitserver.onclick.ItemClickListener;
 
 public class CategoryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
