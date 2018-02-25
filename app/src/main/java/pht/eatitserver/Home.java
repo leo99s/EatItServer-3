@@ -443,6 +443,9 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         } else if (id == R.id.nav_order) {
             Intent orderList = new Intent(Home.this, RequestList.class);
             startActivity(orderList);
+        } else if (id == R.id.nav_market) {
+            Intent market = new Intent(Home.this, Market.class);
+            startActivity(market);
         } else if (id == R.id.nav_sign_out) {
 
         }
