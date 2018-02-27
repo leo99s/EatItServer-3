@@ -42,8 +42,8 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderViewHolder> {
         Order item = orderList.get(position);
         holder.name_food.setText(String.format("Name : %s", item.getName()));
         holder.quantity_food.setText(String.format("Quantity : %s", item.getQuantity()));
-        holder.price_food.setText(String.format("Price : %s", item.getPrice()));
-        holder.discount_food.setText(String.format("Discount : %s", item.getDiscount()));
+        holder.price_food.setText(String.format("Price : $ %s", item.getPrice()));
+        holder.discount_food.setText(String.format("Discount : $ %s", item.getDiscount()));
     }
 
     @Override

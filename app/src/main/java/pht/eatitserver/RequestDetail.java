@@ -39,7 +39,7 @@ public class RequestDetail extends AppCompatActivity {
         id_request.setText(requestID);
         phone_request.setText(Global.activeUser.getPhone());
         address_request.setText(Global.currentRequest.getAddress());
-        total_price_request.setText(Global.currentRequest.getTotalPrice());
+        total_price_request.setText("$ " + Global.currentRequest.getTotalPrice());
         message_request.setText(Global.currentRequest.getMessage());
 
         OrderAdapter adapter = new OrderAdapter(Global.currentRequest.getOrders());

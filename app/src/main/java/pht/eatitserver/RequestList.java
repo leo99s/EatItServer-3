@@ -98,21 +98,21 @@ public class RequestList extends AppCompatActivity {
                 holder.address_request.setText(model.getAddress());
                 holder.delivery_status_request.setText(Global.getDeliveryStatus(model.getDeliveryStatus()));
 
-                holder.btnUpdate.setOnClickListener(new View.OnClickListener() {
+                holder.txtUpdate.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         showUpdateDialog(adapter.getRef(position).getKey(), adapter.getItem(position));
                     }
                 });
 
-                holder.btnDelete.setOnClickListener(new View.OnClickListener() {
+                holder.txtDelete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         deleteRequest(adapter.getRef(position).getKey(), adapter.getItem(position));
                     }
                 });
 
-                holder.btnDetail.setOnClickListener(new View.OnClickListener() {
+                holder.txtDetail.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent requestDetail = new Intent(RequestList.this, RequestDetail.class);
@@ -122,7 +122,7 @@ public class RequestList extends AppCompatActivity {
                     }
                 });
 
-                holder.btnDirection.setOnClickListener(new View.OnClickListener() {
+                holder.txtDirect.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent requestTracking = new Intent(RequestList.this, RequestTracking.class);

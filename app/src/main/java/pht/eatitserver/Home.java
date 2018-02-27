@@ -110,10 +110,10 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         layoutManager = new LinearLayoutManager(this);
         rcvCategory.setLayoutManager(layoutManager);
 
-        loadCategory();
-
         // Send token
         updateToken(FirebaseInstanceId.getInstance().getToken());
+
+        loadCategory();
     }
 
     @Override
@@ -447,7 +447,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             Intent market = new Intent(Home.this, Market.class);
             startActivity(market);
         } else if (id == R.id.nav_sign_out) {
-
+            Intent signIn = new Intent(Home.this, SignIn.class);
+            startActivity(signIn);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

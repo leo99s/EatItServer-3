@@ -4,7 +4,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp">
+    android:layout_marginTop="3dp"
+    android:layout_marginLeft="3dp"
+    android:layout_marginRight="3dp"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,6 +30,7 @@
                 android:gravity="center_vertical|start"
                 android:textAllCaps="true"
                 android:text="01"
+                android:textSize="15sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -64,43 +69,52 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_margin="12dp"
             android:layout_weight="4">
 
-            <info.hoang8f.widget.FButton
-                android:id="@+id/btnUpdate"
+            <TextView
+                android:id="@+id/txtUpdate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:fButtonColor="@android:color/white"
-                app:cornerRadius="0dp"
-                android:text="Update" />
+                android:text="UPDATE"
+                android:textAlignment="center"
+                android:textSize="15sp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
 
-            <info.hoang8f.widget.FButton
-                android:id="@+id/btnDelete"
+            <TextView
+                android:id="@+id/txtDelete"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:fButtonColor="@android:color/white"
-                app:cornerRadius="0dp"
-                android:text="Delete" />
+                android:text="DELETE"
+                android:textAlignment="center"
+                android:textSize="15sp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
 
-            <info.hoang8f.widget.FButton
-                android:id="@+id/btnDetail"
+            <TextView
+                android:id="@+id/txtDetail"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:fButtonColor="@android:color/white"
-                app:cornerRadius="0dp"
-                android:text="Detail" />
+                android:text="DETAIL"
+                android:textAlignment="center"
+                android:textSize="15sp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
 
-            <info.hoang8f.widget.FButton
-                android:id="@+id/btnDirection"
+            <TextView
+                android:id="@+id/txtDirect"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:fButtonColor="@android:color/white"
-                app:cornerRadius="0dp"
-                android:text="Direction" />
+                android:text="DIRECT"
+                android:textAlignment="center"
+                android:textSize="15sp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
