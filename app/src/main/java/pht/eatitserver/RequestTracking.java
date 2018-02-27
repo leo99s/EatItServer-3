@@ -101,25 +101,16 @@ public class RequestTracking extends FragmentActivity implements
         checkPlayServices();
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+    }
+
     private void requestRuntimePermission() {
         ActivityCompat.requestPermissions(this, new String[]{
                 ACCESS_FINE_LOCATION,
                 ACCESS_COARSE_LOCATION,
         }, LOCATION_PERMISSION_REQUEST);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
-            case LOCATION_PERMISSION_REQUEST:
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    if(checkPlayServices()){
-                        buildGoogleApiClient();
-                        createLocationRequest();
-                    }
-                }
-                break;
-        }
     }
 
     private boolean checkPlayServices() {
@@ -157,6 +148,26 @@ public class RequestTracking extends FragmentActivity implements
         mLocationRequest.setSmallestDisplacement(DISPLACEMENT);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case LOCATION_PERMISSION_REQUEST:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    if(checkPlayServices()){
+                        buildGoogleApiClient();
+                        createLocationRequest();
+                    }
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mLastLocation = location;
+        displayLocation();
+    }
+
     private void displayLocation() {
         if(ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
@@ -192,6 +203,31 @@ public class RequestTracking extends FragmentActivity implements
         }
     }
 
+    private void updateLocation() {
+        if(ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            return;
+        }
+
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        displayLocation();
+        //updateLocation();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
     private void drawRoute(LatLng myLocation, LatLng orderLocation) {
         mMapService.getDirection(myLocation.latitude + "," + myLocation.longitude,
                 orderLocation.latitude + "," + orderLocation.longitude)
@@ -206,42 +242,6 @@ public class RequestTracking extends FragmentActivity implements
 
                     }
                 });
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        displayLocation();
-        //updateLocation();
-    }
-
-    private void updateLocation() {
-        if(ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            return;
-        }
-
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        mLastLocation = location;
-        displayLocation();
     }
 
     private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {

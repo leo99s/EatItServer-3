@@ -20,7 +20,7 @@
             android:id="@+id/edtPhone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Phone Number"
+            android:hint="Phone"
             android:textColorHint="@android:color/white"
             android:text="1234567890"
             android:textColor="@android:color/white"
