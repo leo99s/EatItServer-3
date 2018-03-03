@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import info.hoang8f.widget.FButton;
 import pht.eatitserver.global.Global;
-import pht.eatitserver.model.DataMessage;
+import pht.eatitserver.model.Message;
 import pht.eatitserver.model.Response;
 import pht.eatitserver.remote.FCMService;
 import retrofit2.Call;
@@ -41,7 +41,7 @@ public class Market extends AppCompatActivity {
                 content.put("title", edtTitle.getText().toString());
                 content.put("message", edtMessage.getText().toString());
 
-                DataMessage notification = new DataMessage("/topics/News", content);
+                Message notification = new Message("/topics/News", content);
 
                 mFcmService.sendNotification(notification).enqueue(new Callback<Response>() {
                     @Override

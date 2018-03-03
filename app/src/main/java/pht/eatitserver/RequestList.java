@@ -23,7 +23,7 @@ import com.jaredrummler.materialspinner.MaterialSpinner;
 import java.util.HashMap;
 import java.util.Map;
 import pht.eatitserver.global.Global;
-import pht.eatitserver.model.DataMessage;
+import pht.eatitserver.model.Message;
 import pht.eatitserver.model.Request;
 import pht.eatitserver.model.Response;
 import pht.eatitserver.model.Token;
@@ -186,7 +186,7 @@ public class RequestList extends AppCompatActivity {
                     content.put("title", "Eat It");
                     content.put("message", "Your order was updated : " + key);
 
-                    DataMessage notification = new DataMessage(clientToken.getToken(), content);
+                    Message notification = new Message(clientToken.getToken(), content);
 
                     mFCMService.sendNotification(notification)
                             .enqueue(new Callback<Response>() {

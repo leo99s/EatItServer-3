@@ -1,6 +1,6 @@
 package pht.eatitserver.remote;
 
-import pht.eatitserver.model.DataMessage;
+import pht.eatitserver.model.Message;
 import pht.eatitserver.model.Response;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -17,5 +17,5 @@ public interface FCMService {
     )
 
     @POST("fcm/send")
-    Call<Response> sendNotification(@Body DataMessage body);
+    Call<Response> sendNotification(@Body Message body);
 }
