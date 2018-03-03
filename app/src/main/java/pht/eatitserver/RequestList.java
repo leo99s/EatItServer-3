@@ -20,11 +20,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.jaredrummler.materialspinner.MaterialSpinner;
+import java.util.HashMap;
+import java.util.Map;
 import pht.eatitserver.global.Global;
-import pht.eatitserver.model.Notification;
+import pht.eatitserver.model.DataMessage;
 import pht.eatitserver.model.Request;
 import pht.eatitserver.model.Response;
-import pht.eatitserver.model.Sender;
 import pht.eatitserver.model.Token;
 import pht.eatitserver.remote.FCMService;
 import pht.eatitserver.viewholder.RequestViewHolder;
@@ -181,20 +182,23 @@ public class RequestList extends AppCompatActivity {
                 for(DataSnapshot childDataSnapshot : dataSnapshot.getChildren()){
                     Token clientToken = childDataSnapshot.getValue(Token.class);
 
-                    // Create raw payload to send
-                    Notification notification = new Notification("Eat It", "Your request " + key + " was updated !");
-                    Sender content = new Sender(clientToken.getToken(), notification);
-                    mFCMService.sendNotification(content)
+                    Map<String, String> content = new HashMap<>();
+                    content.put("title", "Eat It");
+                    content.put("message", "Your order was updated : " + key);
+
+                    DataMessage notification = new DataMessage(clientToken.getToken(), content);
+
+                    mFCMService.sendNotification(notification)
                             .enqueue(new Callback<Response>() {
                                 @Override
                                 public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
                                     if(response.code() == 200){
                                         if(response.body().success == 1){
-                                            Toast.makeText(RequestList.this, "Your request was update !", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(RequestList.this, "Your order was update !", Toast.LENGTH_SHORT).show();
                                             finish();
                                         }
                                         else {
-                                            Toast.makeText(RequestList.this, "Your request was update but we can't send notification !", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(RequestList.this, "Your order was update but we can't send notification !", Toast.LENGTH_SHORT).show();
                                             finish();
                                         }
                                     }

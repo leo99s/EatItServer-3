@@ -12,8 +12,8 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:orientation="vertical"
-		android:paddingLeft="15dp"
-		android:paddingRight="15dp"
+		android:paddingLeft="20dp"
+		android:paddingRight="20dp"
 		android:layout_centerInParent="true">
 
 		<com.rengwuxian.materialedittext.MaterialEditText
@@ -23,7 +23,7 @@
 			android:hint="Title"
 			android:textColorHint="@android:color/white"
 			android:textColor="@android:color/white"
-			android:textSize="25sp"
+			android:textSize="20sp"
 			android:inputType="text"
 			app:met_baseColor="@android:color/white"
 			app:met_floatingLabel="highlight"
@@ -37,7 +37,7 @@
 			android:hint="Message"
 			android:textColorHint="@android:color/white"
 			android:textColor="@android:color/white"
-			android:textSize="25sp"
+			android:textSize="20sp"
 			android:inputType="textMultiLine"
 			app:met_baseColor="@android:color/white"
 			app:met_floatingLabel="highlight"

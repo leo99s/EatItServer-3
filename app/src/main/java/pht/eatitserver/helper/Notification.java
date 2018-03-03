@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
+
 import pht.eatitserver.R;
 
 public class Notification extends ContextWrapper {
@@ -56,6 +58,16 @@ public class Notification extends ContextWrapper {
                 .setContentText(body)
                 .setSound(sound)
                 .setContentIntent(pendingIntent)
+                .setAutoCancel(false);
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    public android.app.Notification.Builder getNotification(String title, String body, Uri sound){
+        return new android.app.Notification.Builder(getApplicationContext(), CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setContentTitle(title)
+                .setContentText(body)
+                .setSound(sound)
                 .setAutoCancel(false);
     }
 }

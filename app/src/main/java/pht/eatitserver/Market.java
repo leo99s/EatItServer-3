@@ -6,11 +6,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import java.util.HashMap;
+import java.util.Map;
 import info.hoang8f.widget.FButton;
 import pht.eatitserver.global.Global;
-import pht.eatitserver.model.Notification;
+import pht.eatitserver.model.DataMessage;
 import pht.eatitserver.model.Response;
-import pht.eatitserver.model.Sender;
 import pht.eatitserver.remote.FCMService;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -36,17 +37,13 @@ public class Market extends AppCompatActivity {
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Create a notification
-                Notification notification = new Notification(
-                        edtTitle.getText().toString(),
-                        edtMessage.getText().toString()
-                );
+                Map<String, String> content = new HashMap<>();
+                content.put("title", edtTitle.getText().toString());
+                content.put("message", edtMessage.getText().toString());
 
-                Sender toTopic = new Sender();
-                toTopic.to = new StringBuilder("/topics/").append("News").toString();
-                toTopic.notification = notification;
+                DataMessage notification = new DataMessage("/topics/News", content);
 
-                mFcmService.sendNotification(toTopic).enqueue(new Callback<Response>() {
+                mFcmService.sendNotification(notification).enqueue(new Callback<Response>() {
                     @Override
                     public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
                         if(response.isSuccessful()){
